@@ -51,7 +51,9 @@ const Completed = ({ navigation, route }) => {
                     data={data}
                     renderItem={({ item, index }) => {
                         return (
-                            <Card item={item} />
+                            <Card item={item} aisha={(item) => {
+                                console.log("from aishaaaaaa  ==>", item)
+                            }} />
                         )
                     }}
                 />

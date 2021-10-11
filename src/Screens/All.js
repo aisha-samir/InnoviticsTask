@@ -14,7 +14,6 @@ import { Loader } from '../Components/Loader';
 import Add from '../Assets/Svgs/Add';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Modal from 'react-native-modal';
-import Icon3 from 'react-native-vector-icons/Ionicons';
 import {
     saveError,
     saveSuccess
@@ -29,7 +28,6 @@ const All = ({ navigation }) => {
     const [title, setTitle] = useState('')
     const [desc, setDesc] = useState('')
     const [modal, setModal] = useState(false)
-    const [doneModal, setdoneModal] = useState(false)
 
     useEffect(() => {
         dispatch(GetAllTasks())
@@ -103,14 +101,16 @@ const All = ({ navigation }) => {
                             progressViewOffset={calcHeight(100)}
                         />
                     }
-
+                    extraData={data}
                     showsVerticalScrollIndicator={false}
                     style={{ width: "100%", }}
                     contentContainerStyle={{ paddingBottom: calcHeight(50), paddingTop: calcHeight(20), alignItems: "center" }}
                     data={data}
                     renderItem={({ item }) => {
                         return (
-                            <Card item={item} />
+                            <Card item={item} aisha={(item) => {
+                                console.log("from aishaaaaaa  ==>", item)
+                            }} />
                         )
                     }}
                 />

@@ -26,7 +26,24 @@ const colors = {
   }
 };
 
+export const FilterTasks = (tasks) => {
+  console.log("taskssssssss==>", tasks)
+  let temp = [...tasks]
+  let Completed = temp.filter(function (item) {
+    return item.isDone == true;
+  });
+  let unComleted = temp.filter(function (item) {
+    return item.isDone == false;
+  });
+  console.log("afteeer==>", Completed, unComleted)
 
+  return async dispatch => {
+    dispatch(saveResponseGeneral(Completed, "Completed"));
+    dispatch(saveResponseGeneral(unComleted, "UnComleted"));
+  }
+
+
+}
 
 export const GetAllTasks = () => {
 
@@ -42,17 +59,18 @@ export const GetAllTasks = () => {
         if (response) {
 
           console.log(colors.bg.Green + 'GetDataFrom GetAllTasks API !', response.data.data);
-          let temp = [...response.data.data]
+          // let temp = [...response.data.data]
           dispatch(saveResponseGeneral(response.data.data, "GetAllTasks"));
           dispatch(disableLoader("GetAllTasks"))
-          let Completed = temp.filter(function (item) {
-            return item.isDone == true;
-          });
-          let unComleted = temp.filter(function (item) {
-            return item.isDone == false;
-          });
-          dispatch(saveResponseGeneral(Completed, "Completed"));
-          dispatch(saveResponseGeneral(unComleted, "UnComleted"));
+          dispatch(FilterTasks(response.data.data))
+          // let Completed = temp.filter(function (item) {
+          //   return item.isDone == true;
+          // });
+          // let unComleted = temp.filter(function (item) {
+          //   return item.isDone == false;
+          // });
+          // dispatch(saveResponseGeneral(Completed, "Completed"));
+          // dispatch(saveResponseGeneral(unComleted, "UnComleted"));
         }
       }
       ,
@@ -95,6 +113,63 @@ export const AddNewTask = (body) => {
   }
 };
 
+export const UpdateTask = (body) => {
+
+  const request = axios({
+    method: 'PUT',
+    url: `https://api.fake.rest/9205aabd-3ffa-4b36-8225-5a39528185fa/task/update`,
+    data: body,
+  });
+
+  return async dispatch => {
+    dispatch(enableLoader("UpdateTask"))
+    request.then(
+      response => {
+        if (response) {
+          console.log(colors.bg.Green + 'GetDataFrom UpdateTask API !', response.data.data);
+          dispatch(saveSuccess("UpdateTask", " Task Updated successfully"))
+          dispatch(clearGeneral())
+          dispatch(GetAllTasks())
+        }
+      }
+      ,
+      err => {
+        console.log(colors.bg.Red + 'Unable to fetch data from UpdateTask API !', err);
+        dispatch(disableLoader("UpdateTask"))
+        dispatch(saveError("UpdateTask", "an error occurred"))
+      },
+    );
+  }
+};
+
+export const DeleteTask = (body) => {
+
+  const request = axios({
+    method: 'DELETE',
+    url: `https://api.fake.rest/9205aabd-3ffa-4b36-8225-5a39528185fa/task/delete`,
+    data: body,
+  });
+
+  return async dispatch => {
+    dispatch(enableLoader("deleteTask"))
+    request.then(
+      response => {
+        if (response) {
+          console.log(colors.bg.Green + 'GetDataFrom deleteTask API !', response.data.data);
+          dispatch(saveSuccess("deleteTask", " Task Deleted successfully"))
+          dispatch(clearGeneral())
+          dispatch(GetAllTasks())
+        }
+      }
+      ,
+      err => {
+        console.log(colors.bg.Red + 'Unable to fetch data from deleteTask API !', err);
+        dispatch(disableLoader("deleteTask"))
+        dispatch(saveError("deleteTask", "an error occurred"))
+      },
+    );
+  }
+};
 
 
 export const clearErrors = () => {
