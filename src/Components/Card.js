@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TextInput, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Text, TextInput, View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { calcHeight, calcWidth } from '../Config/Dimension'
 import AppStyles from '../Config/styles'
 import Close from '../Assets/Svgs/Close'
@@ -17,6 +17,29 @@ export const Card = (props) => {
     const dispatch = useDispatch();
     const generalState = useSelector(state => state.generalReducer)
     const presistState = useSelector(state => state.presistReducer)
+    const boxAnimationValue = React.useRef(new Animated.Value(0)).current;
+
+
+
+
+
+    useEffect(() => {
+
+
+        Animated.stagger(3000, [
+            Animated.timing(boxAnimationValue, {
+                toValue: 1,
+                duration: 3000,
+                useNativeDriver: true
+            }),
+        ]).start(({ finished }) => { });
+
+    }, [])
+
+
+
+
+
 
     const updateTask = () => {
         let body = {
@@ -65,32 +88,41 @@ export const Card = (props) => {
 
 
     return (
-        <TouchableOpacity
-            onPress={() => {
-                //props.aisha("heeeeeeeeeeeeeeey")
-                updateTask()
+        <Animated.View
+            style={{
+                opacity: boxAnimationValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1]
+                })
             }}
-
-            style={styles.card}>
-            <View style={[styles.notification, { backgroundColor: props.item.isDone ? AppStyles.Color.GREEN : AppStyles.Color.RED }]} />
-            <View style={{ marginLeft: calcWidth(18) }}>
-                <Text style={[styles.taskName, {
-                    textDecorationLine: props.item.isDone ? 'line-through' : null,
-                    textDecorationStyle: props.item.isDone ? 'solid' : null
-                }]} numberOfLines={2}>
-                    {props.item.name}
-                </Text>
-                <Text style={styles.taskDesc} numberOfLines={1}>
-                    {props.item.description}
-                </Text>
-            </View>
+        >
             <TouchableOpacity
-                onPress={() => deleteTask()}
-                style={styles.close}>
-                <Close />
-            </TouchableOpacity>
+                onPress={() => {
+                    //props.aisha("heeeeeeeeeeeeeeey")
+                    updateTask()
+                }}
 
-        </TouchableOpacity>
+                style={styles.card}>
+                <View style={[styles.notification, { backgroundColor: props.item.isDone ? AppStyles.Color.GREEN : AppStyles.Color.RED }]} />
+                <View style={{ marginLeft: calcWidth(18) }}>
+                    <Text style={[styles.taskName, {
+                        textDecorationLine: props.item.isDone ? 'line-through' : null,
+                        textDecorationStyle: props.item.isDone ? 'solid' : null
+                    }]} numberOfLines={2}>
+                        {props.item.name}
+                    </Text>
+                    <Text style={styles.taskDesc} numberOfLines={1}>
+                        {props.item.description}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    onPress={() => deleteTask()}
+                    style={styles.close}>
+                    <Close />
+                </TouchableOpacity>
+
+            </TouchableOpacity>
+        </Animated.View>
     )
 }
 

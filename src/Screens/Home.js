@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, SafeAreaView, Image, Animated } from 'react-native'
 import AppStyles from '../Config/styles'
 import { calcHeight, calcWidth } from '../Config/Dimension'
 import TopTabNavigation from '../Navigation/TopTabNavigation'

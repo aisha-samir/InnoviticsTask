@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     StyleSheet, View, Text, SafeAreaView, FlatList, TouchableOpacity,
-    RefreshControl, ImageBackground, TextInput
+    RefreshControl, ImageBackground, TextInput, Animated
 } from 'react-native'
 import AppStyles from '../Config/styles'
 import { calcHeight, calcWidth } from '../Config/Dimension'
@@ -48,6 +48,7 @@ const All = ({ navigation }) => {
         dispatch(GetAllTasks())
         setTimeout(() => setRefreshing(false), 1000)
     }, [refreshing]);
+
 
     const addTask = async () => {
 
@@ -117,6 +118,7 @@ const All = ({ navigation }) => {
                     data={data}
                     renderItem={({ item }) => {
                         return (
+
                             <Card item={item} message={(message) => {
                                 console.log("from aishaaaaaa  ==>", message)
                                 if (message == "updateTask") {
@@ -156,7 +158,7 @@ const All = ({ navigation }) => {
                 }}>
                 <View style={styles.selectModal}>
                     <ImageBackground source={require("../Assets/Images/bg2.png")} style={styles.image}
-                    //  resizeMode="cover"
+                        resizeMode="cover"
                     >
                         <Text style={styles.modalTitle}>Create a new task</Text>
                         <TextInput
@@ -230,7 +232,6 @@ const styles = StyleSheet.create({
         color: "#fff",
     },
     selectModal: {
-        alignItems: "center",
         position: "absolute",
         bottom: 0,
         backgroundColor: "#fff",
@@ -239,9 +240,14 @@ const styles = StyleSheet.create({
         borderRadius: calcHeight(30)
     },
     image: {
-        height: "100%",
-        width: "100%",
+        // height: "100%",
+        // width: "100%",
+        // flex: 1,
         flex: 1,
+        width: null,
+        height: null,
+        // height: calcHeight(380),
+        // width: "100%",
     },
     input: {
         borderBottomColor: AppStyles.Color.WHITE,
