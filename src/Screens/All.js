@@ -114,6 +114,16 @@ const All = ({ navigation }) => {
                     extraData={data}
                     showsVerticalScrollIndicator={false}
                     style={{ width: "100%", }}
+                    ListFooterComponent={() => {
+                        return (
+                            <TouchableOpacity style={styles.Touchable} onPress={() => {
+                                setModal(true)
+                            }}>
+                                <Icon name="add" color="#fff" size={calcHeight(25)} />
+                                <Text style={styles.TouchableText}>Create Task</Text>
+                            </TouchableOpacity>
+                        )
+                    }}
                     contentContainerStyle={{ paddingBottom: calcHeight(50), paddingTop: calcHeight(20), alignItems: "center" }}
                     data={data}
                     renderItem={({ item }) => {
@@ -133,12 +143,12 @@ const All = ({ navigation }) => {
                 />
             }
 
-            <TouchableOpacity style={styles.Touchable} onPress={() => {
+            {/* <TouchableOpacity style={styles.Touchable} onPress={() => {
                 setModal(true)
             }}>
                 <Icon name="add" color="#fff" size={calcHeight(25)} />
                 <Text style={styles.TouchableText}>Create Task</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <Modal
                 testID={'modal'}
                 isVisible={modal}
@@ -157,8 +167,8 @@ const All = ({ navigation }) => {
                     margin: 0,
                 }}>
                 <View style={styles.selectModal}>
-                    <ImageBackground source={require("../Assets/Images/bg2.png")} style={styles.image}
-                        resizeMode="cover"
+                    <ImageBackground source={require("../Assets/Images/bg3.png")} style={styles.image}
+                        resizeMode="stretch"
                     >
                         <Text style={styles.modalTitle}>Create a new task</Text>
                         <TextInput
@@ -211,14 +221,14 @@ const styles = StyleSheet.create({
         width: calcWidth(170),
         backgroundColor: "#2F58E2",
         borderRadius: calcHeight(20),
-        shadowColor: "#2F58E266",
+        shadowColor: "#2F58E2",
         shadowOffset: {
             width: 3,
             height: 6,
         },
         shadowOpacity: 0.8,
-        shadowRadius: 3.84,
-        elevation: 8,
+        shadowRadius: 6.84,
+        elevation: 12,
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
@@ -234,7 +244,7 @@ const styles = StyleSheet.create({
     selectModal: {
         position: "absolute",
         bottom: 0,
-        backgroundColor: "#fff",
+        backgroundColor: "#2F58E2",
         height: calcHeight(380),
         width: "100%",
         borderRadius: calcHeight(30)
@@ -264,6 +274,7 @@ const styles = StyleSheet.create({
         fontSize: calcWidth(26),
         fontFamily: AppStyles.Fonts.Regular,
         marginLeft: calcWidth(22),
+        marginVertical: calcHeight(20)
     },
 
 

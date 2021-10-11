@@ -103,7 +103,11 @@ export const Card = (props) => {
                 }}
 
                 style={styles.card}>
-                <View style={[styles.notification, { backgroundColor: props.item.isDone ? AppStyles.Color.GREEN : AppStyles.Color.RED }]} />
+                <View style={[styles.notification,
+                {
+                    backgroundColor: props.item.isDone ? AppStyles.Color.GREEN : AppStyles.Color.RED,
+                    shadowColor: props.item.isDone ? AppStyles.Color.GREEN : AppStyles.Color.RED
+                }]} />
                 <View style={{ marginLeft: calcWidth(18) }}>
                     <Text style={[styles.taskName, {
                         textDecorationLine: props.item.isDone ? 'line-through' : null,
@@ -135,11 +139,11 @@ const styles = StyleSheet.create({
         shadowColor: "#E0E3EB91",
         shadowOffset: {
             width: 0,
-            height: 6,
+            height: 12,
         },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 6,
+        shadowOpacity: 1,
+        shadowRadius: 8.84,
+        elevation: 22,
         alignSelf: "center",
         flexDirection: "row",
         padding: calcWidth(22),
@@ -151,6 +155,14 @@ const styles = StyleSheet.create({
         height: "100%",
         width: calcWidth(2),
         borderRadius: calcHeight(3),
+        elevation: 10,
+        shadowOpacity: 0.8,
+        shadowRadius: 3.84,
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+
     },
     taskName: {
         fontSize: calcWidth(22),

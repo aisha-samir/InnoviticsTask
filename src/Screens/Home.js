@@ -59,7 +59,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#58d4f1",
         justifyContent: "center",
         alignItems: "center",
-        elevation: 4
+        elevation: 22,
+        shadowColor: "#58d4f1",
+        shadowOpacity: 0.8,
+        shadowRadius: 3.84,
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
 
     },
     date: {
