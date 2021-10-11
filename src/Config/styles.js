@@ -7,6 +7,8 @@ const AppStyles = {
     TEXT_BLUE: "#0A0D47",
     DARK_THEM: "#004067",
     LIGHT_THEM: "#F5F7FA",
+    GREEN: "#1AFF00",
+    RED: "#FF006F",
 
     rgba: (r, g, b, a) => 'rgba(' + r + "," + g + "," + b + "," + a + ")",
   },

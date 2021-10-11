@@ -24,7 +24,6 @@ export const presistReducer = createReducer(initialState, {
     return {
       ...state,
       data: [],
-      OneSignal: null
     };
   },
 });

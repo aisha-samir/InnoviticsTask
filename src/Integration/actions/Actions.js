@@ -6,7 +6,8 @@ export const ENABLE_LOADER = 'ENABLE_LOADER';
 export const DISABLE_LOADER = 'DISABLE_LOADER';
 export const SAVE_ERORR = "SAVE_ERORR"
 export const CLEAR_ERORR = 'CLEAR_ERORR';
-
+export const SAVE_SUCCESS = "SAVE_SUCCESS"
+export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 
 
 export const saveResponseGeneral = (payload, reducerVariable) => {
@@ -37,6 +38,19 @@ export const saveError = (name, payload) => {
 export const clearError = () => {
   return {
     type: CLEAR_ERORR,
+  };
+}
+export const saveSuccess = (name, payload) => {
+  return {
+    type: SAVE_SUCCESS,
+    Success: payload,
+    Name: name
+  };
+}
+
+export const clearSuccess = () => {
+  return {
+    type: CLEAR_SUCCESS,
   };
 }
 

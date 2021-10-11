@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TobTabNavigation from './Navigation/TopTabNavigation'
 import Home from './Screens/Home'
 // import AllMovies from './Screens/AllMovies'
-// import AddMoive from './Screens/AddMoive'
+import AddTask from './Screens/AddTask'
 import { Provider as PaperProvider } from 'react-native-paper'
 import { Provider as StoreProvider } from 'react-redux'
 import configureStore from './Integration/store/configureStore';
@@ -27,11 +27,6 @@ function App() {
               component={Home}
             />
 
-            {/* <Stack.Screen
-              name="AllMovies"
-              component={AllMovies}
-            /> */}
-
 
             <Stack.Screen
               name="TobTabNavigation"
@@ -39,10 +34,6 @@ function App() {
             />
 
 
-            {/* <Stack.Screen
-              name="AddMoive"
-              component={AddMoive}
-            /> */}
 
 
           </Stack.Navigator>

@@ -1,189 +1,187 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, Platform, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+    StyleSheet, View, Text, SafeAreaView, FlatList, TouchableOpacity,
+    RefreshControl, ImageBackground, TextInput
+} from 'react-native'
 import AppStyles from '../Config/styles'
 import { calcHeight, calcWidth } from '../Config/Dimension'
-import TopTabNavigation from '../Navigation/TopTabNavigation'
 import { useSelector, useDispatch } from 'react-redux';
-import Header from '../Components/Header'
-import { Loader } from '../Components/Loader';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { check, PERMISSIONS, RESULTS, request, requestMultiple, checkMultiple } from 'react-native-permissions';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import ImageResizer from 'react-native-image-resizer';
-import ImagePicker from 'react-native-image-crop-picker';
-import Modal from 'react-native-modal';
-import { AddNewMoive } from '../Integration/api/ApisFunctions';
 import { Error } from '../Components/Erorr';
+import { Succes } from '../Components/Succes';
+import { GetAllTasks, AddNewTask } from '../Integration/api/ApisFunctions';
+import { Card } from '../Components/Card';
+import { Loader } from '../Components/Loader';
+import Add from '../Assets/Svgs/Add';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Modal from 'react-native-modal';
+import Icon3 from 'react-native-vector-icons/Ionicons';
 import {
     saveError,
+    saveSuccess
 } from '../Integration/actions/Actions';
-var RNFS = require('react-native-fs');
-
-const options = {
-    title: 'Add image to gallery',
-    storageOptions: {
-        skipBackup: true,
-        path: 'images',
-    },
-};
-
-
-
-
-
 
 const All = ({ navigation }) => {
     const dispatch = useDispatch();
     const generalState = useSelector(state => state.generalReducer)
     const presistState = useSelector(state => state.presistReducer)
-    const [image, setImage] = useState(null)
+    const [refreshing, setRefreshing] = useState(false);
+    const [data, setdata] = useState(null)
     const [title, setTitle] = useState('')
-    const [overview, setoverview] = useState('')
+    const [desc, setDesc] = useState('')
     const [modal, setModal] = useState(false)
-    const verifyPermissions = async (param) => {
-        if (Platform.OS == 'ios') {
-            //  <key>NSPhotoLibraryUsageDescription</key>
-            // <string>$(PRODUCT_NAME) would like access to your photo gallery</string>
-            // <key>NSCameraUsageDescription</key>
-            // <string>$(PRODUCT_NAME) would like to use your camera</string>
-            // <key>NSPhotoLibraryAddUsageDescription</key>
+    const [doneModal, setdoneModal] = useState(false)
 
-            checkMultiple([PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.CAMERA])
-                .then((result) => {
-                    switch (result) {
-                        case RESULTS.UNAVAILABLE:
-                            console.log(
-                                'This feature is not available (on this device / in this context)',
-                            );
-                            break;
-                        case RESULTS.DENIED:
-                            console.log(
-                                'The permission has not been requested / is denied but requestable',
-                            );
-                            requestMultiple([PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.CAMERA]).then(() => {
-                                console.log('Hello in if ')
-                                verifyPermissions()
+    useEffect(() => {
+        dispatch(GetAllTasks())
+    }, [])
 
-                            })
-                            break;
-                        case RESULTS.GRANTED:
-                            console.log('The permission is granted');
-                            addImage(param)
-                            break;
-                        case RESULTS.BLOCKED:
-                            console.log('The permission is denied and not requestable anymore');
-                            break;
-                    }
-                })
-                .catch((error) => {
-                    // …
-                });
+    useEffect(() => {
+        if (generalState.data.GetAllTasks) {
+            setdata(generalState.data.GetAllTasks)
+        }
+    }, [generalState])
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setdata(null)
+        dispatch(GetAllTasks())
+        setTimeout(() => setRefreshing(false), 1000)
+    }, [refreshing]);
+
+    const addTask = async () => {
+
+        if (title != "" && desc != "") {
+            let body = {
+                name: title,
+                description: desc,
+                isDone: false
+            }
+            dispatch(AddNewTask(body))
+            dispatch(saveSuccess("AddNewTask", " Task added successfully"))
         }
         else {
+            dispatch(saveError("AddNewTask", "please fill all required fields"))
 
-            checkMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE])
-                .then((result) => {
-                    console.log("result", result['android.permission.CAMERA'], result['android.permission.WRITE_EXTERNAL_STORAGE'])
-
-                    if (result['android.permission.CAMERA'] == 'denied' || result['android.permission.WRITE_EXTERNAL_STORAGE'] == 'denied') {
-                        console.log(
-                            'The permission has not been requested / is denied but requestable',
-                        );
-                        requestMultiple([PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE])
-                            .then(() => {
-                                verifyPermissions()
-                            })
-                    }
-                    else if (result['android.permission.CAMERA'] == 'granted' && result['android.permission.WRITE_EXTERNAL_STORAGE'] == 'granted') {
-                        console.log('The permission is granted');
-                        addImage(param)
-                    }
-                })
-                .catch((error) => {
-                    // …
-                });
         }
+
 
     }
+    const addTaskLocal = async () => {
 
-    const addImage = (param) => {
-        console.log("param===>", param)
-        if (param == "camera") {
-            ImagePicker.openCamera({
-                width: 300,
-                height: 400,
-                cropping: true,
-            }).then(async image => {
-                console.log("image==>", image);
-                const resizedImageUrl = await ImageResizer.createResizedImage(
-                    image.path,
-                    500,
-                    500,
-                    'JPEG',
-                    100,
-                    0,
-                );
-                const base64 = await RNFS.readFile(resizedImageUrl.path, 'base64');
-                setImage(base64)
-                data = {
-                    image: base64,
-                    file_name: image.fileName ? image.fileName : ('File_name' + Math.floor(Math.random() * 99999))
-                }
-
-            });
-        }
-        else if (param == "gallery") {
-            ImagePicker.openPicker({
-                width: 300,
-                height: 400,
-                cropping: true
-            }).then(async image => {
-                console.log("image==>", image);
-                const resizedImageUrl = await ImageResizer.createResizedImage(
-                    image.path,
-                    500,
-                    500,
-                    'JPEG',
-                    100,
-                    0,
-                );
-
-                const base64 = await RNFS.readFile(resizedImageUrl.path, 'base64');
-                setImage(base64)
-
-
-            });
-        }
-
-    }
-
-    const addMovie = () => {
-
-        if (title != "" && overview != "") {
-
+        if (title != "" && desc != "") {
             let temp = []
-            if (presistState.data.MyMovies) {
-                temp = [...presistState.data.MyMovies]
+            if (generalState.data.GetAllTasks) {
+                temp = [...generalState.data.GetAllTasks]
             }
-            let data = {
-                title: title,
-                overview: overview,
-                image: image
+            let body = {
+                name: title,
+                description: desc,
+                isDone: false
             }
-            temp.unshift(data)
-            dispatch(AddNewMoive(temp, navigation))
+            temp.unshift(body)
+            setdata(temp)
         }
         else {
-            dispatch(saveError("AddNewMoive", "please fill all required fields"))
+            dispatch(saveError("AddNewTask", "please fill all required fields"))
+
         }
+
+
     }
 
     return (
-        <SafeAreaView style={{ backgroundColor: '#F5F7FA', height: "100%", width: "100%", alignItems: "center" }}>
-            <ScrollView style={{ backgroundColor: '#F5F7FA', height: "100%", width: "100%", }}
-                showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 50, alignItems: "center" }}>
+        <SafeAreaView style={{ height: "100%", width: "100%", alignItems: "center", flex: 1 }}>
+            {generalState.Loading.GetAllTasks && <Loader />}
+            {generalState.Errors.AddNewTask && <Error error={generalState.Errors.AddNewTask} />}
+            {generalState.Success.AddNewTask && <Succes message={generalState.Success.AddNewTask} />}
+            {data != null &&
+                <FlatList
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[AppStyles.Color.TEXT_BLUE]}
+                            progressViewOffset={calcHeight(100)}
+                        />
+                    }
 
-            </ScrollView>
+                    showsVerticalScrollIndicator={false}
+                    style={{ width: "100%", }}
+                    contentContainerStyle={{ paddingBottom: calcHeight(50), paddingTop: calcHeight(20), alignItems: "center" }}
+                    data={data}
+                    renderItem={({ item }) => {
+                        return (
+                            <Card item={item} />
+                        )
+                    }}
+                />
+            }
+
+            <TouchableOpacity style={styles.Touchable} onPress={() => {
+                setModal(true)
+            }}>
+                <Icon name="add" color="#fff" size={calcHeight(25)} />
+                <Text style={styles.TouchableText}>Create Task</Text>
+            </TouchableOpacity>
+            <Modal
+                testID={'modal'}
+                isVisible={modal}
+                onBackdropPress={() => setModal(false)}
+                swipeDirection={['up',]}
+                backdropColor="rgba(0,0,0,0.3)"
+                backdropOpacity={0.8}
+                animationInTiming={600}
+                animationOutTiming={600}
+                backdropTransitionInTiming={600}
+                backdropTransitionOutTiming={600}
+                statusBarTranslucent={true}
+                useNativeDriver={true}
+                style={{
+                    justifyContent: 'flex-end',
+                    margin: 0,
+                }}>
+                <View style={styles.selectModal}>
+                    <ImageBackground source={require("../Assets/Images/bg2.png")} style={styles.image}
+                    //  resizeMode="cover"
+                    >
+                        <Text style={styles.modalTitle}>Create a new task</Text>
+                        <TextInput
+
+                            onChangeText={(value) => setTitle(value)}
+                            placeholder={"Title"}
+                            placeholderTextColor={AppStyles.Color.WHITE}
+                            style={styles.input}
+                            multiline
+
+                        />
+
+                        <TextInput
+
+                            onChangeText={(value) => setDesc(value)}
+                            placeholder={"Descreption"}
+                            placeholderTextColor={AppStyles.Color.WHITE}
+                            style={styles.input}
+                            multiline
+
+                        />
+
+                        <TouchableOpacity style={[styles.Touchable, {
+                            backgroundColor: "#fff"
+                            , position: "absolute", bottom: calcHeight(36)
+                        }]} onPress={() => {
+                            // addTask()
+                            addTaskLocal()
+                            setModal(false)
+                        }}>
+                            <Icon name="add" color={AppStyles.Color.TEXT_BLUE} size={calcHeight(25)} />
+                            <Text style={[styles.TouchableText, { color: AppStyles.Color.TEXT_BLUE }]}>Create Task</Text>
+                        </TouchableOpacity>
+                    </ImageBackground>
+                </View>
+
+            </Modal>
+
+
+
         </SafeAreaView>
     );
 }
@@ -191,81 +189,61 @@ const All = ({ navigation }) => {
 export default All;
 
 const styles = StyleSheet.create({
+    Touchable: {
+        height: calcHeight(56),
+        width: calcWidth(170),
+        backgroundColor: "#2F58E2",
+        borderRadius: calcHeight(20),
+        shadowColor: "#2F58E266",
+        shadowOffset: {
+            width: 3,
+            height: 6,
+        },
+        shadowOpacity: 0.8,
+        shadowRadius: 3.84,
+        elevation: 8,
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "center",
+        flexDirection: "row",
+        marginBottom: calcHeight(36),
+
+    },
+    TouchableText: {
+        fontSize: calcWidth(18),
+        fontFamily: AppStyles.Fonts.Regular,
+        color: "#fff",
+    },
     selectModal: {
         alignItems: "center",
         position: "absolute",
         bottom: 0,
         backgroundColor: "#fff",
-        height: calcHeight(326),
+        height: calcHeight(380),
         width: "100%",
-        borderTopLeftRadius: calcHeight(10),
-        borderTopRightRadius: calcHeight(10),
+        borderRadius: calcHeight(30)
     },
-    selectModalFristRow: {
-        backgroundColor: "#00000014",
-        height: calcHeight(53),
+    image: {
+        height: "100%",
         width: "100%",
-        alignItems: "center",
-        flexDirection: "row",
-        marginBottom: calcHeight(16)
-    },
-    selectModalText: {
-        color: "#1C254B",
-        fontSize: calcWidth(16),
-        fontFamily: AppStyles.Fonts.Regular,
-        marginLeft: calcWidth(25)
-
-    },
-    selectModalFristRowComponent: {
-        backgroundColor: "#CFD0D2",
-        width: calcWidth(24),
-        height: calcHeight(2),
-        marginLeft: calcWidth(77.5)
-    },
-    modalTouchable: {
-        marginBottom: calcHeight(10)
+        flex: 1,
     },
     input: {
-        borderBottomColor: AppStyles.Color.LIGHT_GRAY,
+        borderBottomColor: AppStyles.Color.WHITE,
         width: '90%',
-        backgroundColor: '#fff',
         marginBottom: calcHeight(30),
-        color: AppStyles.Color.TEXT_GRAY,
+        marginHorizontal: calcWidth(22),
+        color: AppStyles.Color.WHITE,
         fontSize: calcWidth(14),
         fontFamily: AppStyles.Fonts.Regular,
         borderBottomWidth: calcHeight(1)
     },
-    imageTouchable: {
-        borderStyle: "dashed",
-        borderColor: "#ABABAB",
-        borderWidth: 1,
-        height: calcHeight(120),
-        width: calcWidth(160),
-        borderRadius: calcHeight(15),
-        alignSelf: "center",
-        alignItems: "center",
-        justifyContent: "center",
-        marginVertical: calcHeight(12)
-
-    },
-    touchable: {
-        height: calcHeight(60),
-        width: calcHeight(200),
-        borderRadius: calcHeight(12),
-        backgroundColor: AppStyles.Color.DARK_THEM,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: calcHeight(20)
-    },
-    touchableText: {
-        color: "#fff",
-        fontSize: calcWidth(16),
+    modalTitle: {
+        color: AppStyles.Color.WHITE,
+        fontSize: calcWidth(26),
         fontFamily: AppStyles.Fonts.Regular,
+        marginLeft: calcWidth(22),
     },
-    image: {
-        width: calcWidth(275),
-        height: calcHeight(275),
-        alignSelf: "center",
-        marginVertical: calcHeight(35)
-    },
+
+
 })

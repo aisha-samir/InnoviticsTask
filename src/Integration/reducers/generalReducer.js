@@ -6,7 +6,9 @@ import createReducer from './createReducer';
 const initialState = {
   Loading: [],
   data: [],
-  Errors: []
+  Errors: [],
+  Success: []
+
 };
 
 export const generalReducer = createReducer(initialState, {
@@ -51,6 +53,21 @@ export const generalReducer = createReducer(initialState, {
     return {
       ...state,
       Errors: [],
+    };
+  },
+  ['SAVE_SUCCESS'](state, action) {
+    return {
+      ...state,
+      Success: {
+        ...state.Success,
+        [action.Name]: action.Success
+      },
+    };
+  },
+  ['CLEAR_SUCCESS'](state) {
+    return {
+      ...state,
+      Success: [],
     };
   },
 });

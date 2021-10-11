@@ -1,57 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Image, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, Text, SafeAreaView, Image, Platform, FlatList, TextInput, RefreshControl } from 'react-native'
 import AppStyles from '../Config/styles'
 import { calcHeight, calcWidth } from '../Config/Dimension'
 import { useSelector, useDispatch } from 'react-redux';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { Card } from '../Components/Card';
+import { Loader } from '../Components/Loader';
 
 const UnCompleted = ({ navigation }) => {
     const dispatch = useDispatch();
     const generalState = useSelector(state => state.generalReducer)
     const presistState = useSelector(state => state.presistReducer)
     const [data, setdata] = useState(null)
+    const [refreshing, setRefreshing] = useState(false);
 
-    // useEffect(() => {
-    //     if (presistState.data.MyMovies) {
-    //         setdata(presistState.data.MyMovies)
-    //     }
-    // }, [presistState])
+    useEffect(() => {
+        if (generalState.data.UnComleted) {
+            setdata(generalState.data.UnComleted)
+        }
+    }, [generalState])
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setdata(null)
+        if (generalState.data.UnComleted) {
+            setdata(generalState.data.UnComleted)
+        } setTimeout(() => setRefreshing(false), 1000)
+    }, [refreshing]);
 
     return (
         <SafeAreaView style={{ backgroundColor: '#F5F7FA', height: "100%", width: "100%", alignItems: "center" }}>
 
             {data != null &&
                 <FlatList
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[AppStyles.Color.TEXT_BLUE]}
+                            progressViewOffset={calcHeight(100)}
+                        />
+                    }
+
                     showsVerticalScrollIndicator={false}
                     style={{ width: "100%", }}
                     contentContainerStyle={{ paddingBottom: calcHeight(50), paddingTop: calcHeight(20), alignItems: "center" }}
                     data={data}
                     renderItem={({ item, index }) => {
                         return (
-                            <View style={styles.card}>
-
-                                <View style={styles.imageView}>
-                                    {item.image != null ?
-                                        <Image
-                                            source={{ uri: `data:image/gif;base64,${item.image}` }}
-                                            style={{ height: "100%", width: "100%" }}
-                                            resizeMode="cover"
-                                        />
-                                        : <Icon name="image-off-outline" color={AppStyles.Color.GRAY} size={100} />}
-
-                                </View>
-
-                                <View style={{ marginTop: calcHeight(10), padding: calcHeight(8) }}>
-                                    <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
-                                    <Text style={styles.overview} numberOfLines={4} >{item.overview}</Text>
-                                </View>
-                            </View>
+                            <Card item={item} />
                         )
                     }}
                 />
             }
-
         </SafeAreaView>
     );
 }

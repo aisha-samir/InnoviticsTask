@@ -54,7 +54,7 @@ export default function TobTabNavigation({ navigation, route }) {
             onIndexChange={setIndex}
             renderTabBar={renderTabBar}
             initialLayout={{ width: calcWidth(375) }}
-            style={{ width: calcWidth(375), backgroundColor: "red" }}
+            style={{ width: calcWidth(375), }}
 
         />
     );
@@ -69,12 +69,13 @@ const styles = StyleSheet.create({
         width: "100%",
         height: calcHeight(48),
         alignSelf: 'center',
+        paddingLeft: calcWidth(22)
         // marginTop: calcHeight(20),
     },
     tabItem: {
         alignItems: 'center',
         justifyContent: "center",
-        marginLeft: calcWidth(48)
+        marginRight: calcWidth(48)
     },
     textBar: {
         fontFamily: AppStyles.Fonts.Regular,
