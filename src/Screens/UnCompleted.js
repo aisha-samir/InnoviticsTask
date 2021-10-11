@@ -5,7 +5,11 @@ import { calcHeight, calcWidth } from '../Config/Dimension'
 import { useSelector, useDispatch } from 'react-redux';
 import { Card } from '../Components/Card';
 import { Loader } from '../Components/Loader';
-
+import { Succes } from '../Components/Succes';
+import {
+    saveError,
+    saveSuccess
+} from '../Integration/actions/Actions';
 const UnCompleted = ({ navigation }) => {
     const dispatch = useDispatch();
     const generalState = useSelector(state => state.generalReducer)
@@ -29,6 +33,9 @@ const UnCompleted = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ backgroundColor: '#F5F7FA', height: "100%", width: "100%", alignItems: "center" }}>
+            {generalState.Loading.GetAllTasks && <Loader />}
+            {generalState.Success.UpdateTask && <Succes message={generalState.Success.UpdateTask} />}
+            {generalState.Success.deleteTask && <Succes message={generalState.Success.deleteTask} />}
 
             {data != null &&
                 <FlatList
@@ -46,7 +53,15 @@ const UnCompleted = ({ navigation }) => {
                     data={data}
                     renderItem={({ item, index }) => {
                         return (
-                            <Card item={item} />
+                            <Card item={item} message={(message) => {
+                                console.log("from aishaaaaaa  ==>", message)
+                                if (message == "updateTask") {
+                                    dispatch(saveSuccess("UpdateTask", " Task Updated successfully"))
+                                }
+                                else if (message == "deleteTask") {
+                                    dispatch(saveSuccess("deleteTask", " Task Deleted successfully"))
+                                }
+                            }} />
                         )
                     }}
                 />

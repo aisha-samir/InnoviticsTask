@@ -92,6 +92,9 @@ const All = ({ navigation }) => {
             {generalState.Loading.GetAllTasks && <Loader />}
             {generalState.Errors.AddNewTask && <Error error={generalState.Errors.AddNewTask} />}
             {generalState.Success.AddNewTask && <Succes message={generalState.Success.AddNewTask} />}
+            {generalState.Success.UpdateTask && <Succes message={generalState.Success.UpdateTask} />}
+            {generalState.Success.deleteTask && <Succes message={generalState.Success.deleteTask} />}
+
             {data != null &&
                 <FlatList
                     refreshControl={
@@ -108,8 +111,14 @@ const All = ({ navigation }) => {
                     data={data}
                     renderItem={({ item }) => {
                         return (
-                            <Card item={item} aisha={(item) => {
-                                console.log("from aishaaaaaa  ==>", item)
+                            <Card item={item} message={(message) => {
+                                console.log("from aishaaaaaa  ==>", message)
+                                if (message == "updateTask") {
+                                    dispatch(saveSuccess("UpdateTask", " Task Updated successfully"))
+                                }
+                                else if (message == "deleteTask") {
+                                    dispatch(saveSuccess("deleteTask", " Task Deleted successfully"))
+                                }
                             }} />
                         )
                     }}

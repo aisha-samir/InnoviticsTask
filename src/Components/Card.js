@@ -29,12 +29,12 @@ export const Card = (props) => {
 
             let temp = [...generalState.data.GetAllTasks]
             let updatedData = temp.map(x => (x.id === props.item.id ? { ...x, isDone: !props.item.isDone } : x));
-            console.log("afteer update ==>", generalState.updatedData)
+            console.log("afteer update ==>", updatedData)
             dispatch(saveResponseGeneral(updatedData, "GetAllTasks"));
             dispatch(FilterTasks(updatedData))
         }
         //  dispatch(saveSuccess("UpdateTask", " Task Updated successfully"))
-
+        props.message("updateTask")
 
     }
 
@@ -49,11 +49,13 @@ export const Card = (props) => {
 
             console.log("before delete ==>", generalState.data.GetAllTasks)
             let temp = [...generalState.data.GetAllTasks]
-            temp.splice(props.item.id, 1)
+            let objIndex = temp.findIndex((obj => obj.id == props.item.id));
+            temp.splice(objIndex, 1)
             console.log("after delete ==>", temp)
             dispatch(saveResponseGeneral(temp, "GetAllTasks"));
             dispatch(FilterTasks(temp))
         }
+        props.message("deleteTask")
 
     }
 
@@ -83,7 +85,7 @@ export const Card = (props) => {
                 style={styles.close}>
                 <Close />
             </TouchableOpacity>
-            {generalState.Success.UpdateTask && <Succes message={generalState.Success.UpdateTask} />}
+
         </TouchableOpacity>
     )
 }
