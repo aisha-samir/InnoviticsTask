@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, SafeAreaView, Image, Platform, FlatList, TextIn
 import AppStyles from '../Config/styles'
 import { calcHeight, calcWidth } from '../Config/Dimension'
 import { useSelector, useDispatch } from 'react-redux';
+import { GetAllTasks } from '../Integration/api/ApisFunctions';
 import { Card } from '../Components/Card';
 import { Loader } from '../Components/Loader';
 import { Succes } from '../Components/Succes';
@@ -10,6 +11,8 @@ import {
     saveError,
     saveSuccess
 } from '../Integration/actions/Actions';
+
+
 const UnCompleted = ({ navigation }) => {
     const dispatch = useDispatch();
     const generalState = useSelector(state => state.generalReducer)
@@ -18,17 +21,24 @@ const UnCompleted = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
-        if (generalState.data.UnComleted) {
-            setdata(generalState.data.UnComleted)
+        if (presistState.data.UnComleted) {
+            setdata(presistState.data.UnComleted)
         }
-    }, [generalState])
+    }, [presistState])
+
+    // const onRefresh = useCallback(() => {
+    //     setRefreshing(true);
+    //     setdata(null)
+    //     if (generalState.data.UnComleted) {
+    //         setdata(generalState.data.UnComleted)
+    //     } setTimeout(() => setRefreshing(false), 1000)
+    // }, [refreshing]);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setdata(null)
-        if (generalState.data.UnComleted) {
-            setdata(generalState.data.UnComleted)
-        } setTimeout(() => setRefreshing(false), 1000)
+        dispatch(GetAllTasks())
+        setTimeout(() => setRefreshing(false), 1000)
     }, [refreshing]);
 
     return (
@@ -51,6 +61,7 @@ const UnCompleted = ({ navigation }) => {
                     style={{ width: "100%", }}
                     contentContainerStyle={{ paddingBottom: calcHeight(50), paddingTop: calcHeight(20), alignItems: "center" }}
                     data={data}
+                    extraData={data}
                     renderItem={({ item, index }) => {
                         return (
                             <Card item={item} message={(message) => {

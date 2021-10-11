@@ -14,15 +14,16 @@ import { useSelector, useDispatch } from 'react-redux';
 
 const Home = ({ navigation }) => {
     const generalState = useSelector(state => state.generalReducer)
+    const presistState = useSelector(state => state.presistReducer)
     const [numberOfUnComleted, setnumberOfUnComleted] = useState(0)
 
 
     useEffect(() => {
-        if (generalState.data.UnComleted) {
+        if (presistState.data.UnComleted) {
 
-            setnumberOfUnComleted(generalState.data.UnComleted.length)
+            setnumberOfUnComleted(presistState.data.UnComleted.length)
         }
-    }, [generalState.data.UnComleted])
+    }, [presistState.data.UnComleted])
 
     return (
         <SafeAreaView style={{ backgroundColor: '#F5F7FA', height: "100%", width: "100%", }}>

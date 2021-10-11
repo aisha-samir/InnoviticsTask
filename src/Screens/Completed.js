@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, SafeAreaView, Image, Platform, FlatList, TextIn
 import AppStyles from '../Config/styles'
 import { calcHeight, calcWidth } from '../Config/Dimension'
 import { useSelector, useDispatch } from 'react-redux';
+import { GetAllTasks } from '../Integration/api/ApisFunctions';
 import { Card } from '../Components/Card';
 import { Loader } from '../Components/Loader';
 import { Succes } from '../Components/Succes';
@@ -20,17 +21,24 @@ const Completed = ({ navigation, route }) => {
     const [data, setdata] = useState(null)
 
     useEffect(() => {
-        if (generalState.data.Completed) {
-            setdata(generalState.data.Completed)
+        if (presistState.data.Completed) {
+            setdata(presistState.data.Completed)
         }
-    }, [generalState])
+    }, [presistState])
+
+    // const onRefresh = useCallback(() => {
+    //     setRefreshing(true);
+    //     setdata(null)
+    //     if (presistState.data.Completed) {
+    //         setdata(presistState.data.Completed)
+    //     } setTimeout(() => setRefreshing(false), 1000)
+    // }, [refreshing]);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setdata(null)
-        if (generalState.data.Completed) {
-            setdata(generalState.data.Completed)
-        } setTimeout(() => setRefreshing(false), 1000)
+        dispatch(GetAllTasks())
+        setTimeout(() => setRefreshing(false), 1000)
     }, [refreshing]);
 
 
@@ -49,7 +57,7 @@ const Completed = ({ navigation, route }) => {
                             progressViewOffset={calcHeight(100)}
                         />
                     }
-
+                    extraData={data}
                     showsVerticalScrollIndicator={false}
                     style={{ width: "100%", }}
                     contentContainerStyle={{ paddingBottom: calcHeight(50), paddingTop: calcHeight(20), alignItems: "center" }}

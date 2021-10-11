@@ -17,7 +17,8 @@ import Modal from 'react-native-modal';
 import {
     saveError,
     saveSuccess,
-    saveResponseGeneral
+    saveResponseGeneral,
+    saveResponsePresist
 } from '../Integration/actions/Actions';
 const uuidv4 = require("uuid/v4")
 
@@ -36,10 +37,10 @@ const All = ({ navigation }) => {
     }, [])
 
     useEffect(() => {
-        if (generalState.data.GetAllTasks) {
-            setdata(generalState.data.GetAllTasks)
+        if (presistState.data.GetAllTasks) {
+            setdata(presistState.data.GetAllTasks)
         }
-    }, [generalState])
+    }, [presistState])
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -81,6 +82,7 @@ const All = ({ navigation }) => {
             console.log("neew task", body)
             temp.unshift(body)
             dispatch(saveResponseGeneral(temp, "GetAllTasks"));
+            dispatch(saveResponsePresist(temp, "GetAllTasks"));
             dispatch(FilterTasks(temp))
         }
         else {

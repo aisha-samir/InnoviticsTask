@@ -7,7 +7,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { UpdateTask, DeleteTask, FilterTasks } from '../Integration/api/ApisFunctions';
 import {
     saveResponseGeneral,
-    saveSuccess
+    saveSuccess,
+    saveResponsePresist
 } from '../Integration/actions/Actions';
 import { Succes } from '../Components/Succes';
 
@@ -24,13 +25,15 @@ export const Card = (props) => {
         }
         //dispatch(UpdateTask(body))
 
-        if (generalState.data.GetAllTasks) {
-            console.log("before update ==>", generalState.data.GetAllTasks)
+        if (presistState.data.GetAllTasks) {
+            console.log("before update ==>", presistState.data.GetAllTasks)
 
-            let temp = [...generalState.data.GetAllTasks]
+            let temp = [...presistState.data.GetAllTasks]
             let updatedData = temp.map(x => (x.id === props.item.id ? { ...x, isDone: !props.item.isDone } : x));
             console.log("afteer update ==>", updatedData)
             dispatch(saveResponseGeneral(updatedData, "GetAllTasks"));
+            dispatch(saveResponsePresist(updatedData, "GetAllTasks"));
+
             dispatch(FilterTasks(updatedData))
         }
         //  dispatch(saveSuccess("UpdateTask", " Task Updated successfully"))
@@ -45,14 +48,15 @@ export const Card = (props) => {
         }
         // dispatch(DeleteTask(body))
 
-        if (generalState.data.GetAllTasks) {
+        if (presistState.data.GetAllTasks) {
 
-            console.log("before delete ==>", generalState.data.GetAllTasks)
-            let temp = [...generalState.data.GetAllTasks]
+            console.log("before delete ==>", presistState.data.GetAllTasks)
+            let temp = [...presistState.data.GetAllTasks]
             let objIndex = temp.findIndex((obj => obj.id == props.item.id));
             temp.splice(objIndex, 1)
             console.log("after delete ==>", temp)
             dispatch(saveResponseGeneral(temp, "GetAllTasks"));
+            dispatch(saveResponsePresist(temp, "GetAllTasks"));
             dispatch(FilterTasks(temp))
         }
         props.message("deleteTask")
