@@ -40,6 +40,8 @@ export const FilterTasks = (tasks) => {
   return async dispatch => {
     dispatch(saveResponseGeneral(Completed, "Completed"));
     dispatch(saveResponseGeneral(unComleted, "UnComleted"));
+    dispatch(saveResponsePresist(Completed, "Completed"));
+    dispatch(saveResponsePresist(unComleted, "UnComleted"));
   }
 
 
@@ -63,6 +65,8 @@ export const GetAllTasks = () => {
           dispatch(saveResponseGeneral(response.data.data, "GetAllTasks"));
           dispatch(disableLoader("GetAllTasks"))
           dispatch(FilterTasks(response.data.data))
+          dispatch(saveResponsePresist(response.data.data, "GetAllTasks"));
+
           // let Completed = temp.filter(function (item) {
           //   return item.isDone == true;
           // });

@@ -8,7 +8,7 @@ import { calcHeight, calcWidth } from '../Config/Dimension'
 import { useSelector, useDispatch } from 'react-redux';
 import { Error } from '../Components/Erorr';
 import { Succes } from '../Components/Succes';
-import { GetAllTasks, AddNewTask } from '../Integration/api/ApisFunctions';
+import { GetAllTasks, AddNewTask, FilterTasks } from '../Integration/api/ApisFunctions';
 import { Card } from '../Components/Card';
 import { Loader } from '../Components/Loader';
 import Add from '../Assets/Svgs/Add';
@@ -16,8 +16,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Modal from 'react-native-modal';
 import {
     saveError,
-    saveSuccess
+    saveSuccess,
+    saveResponseGeneral
 } from '../Integration/actions/Actions';
+const uuidv4 = require("uuid/v4")
 
 const All = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -62,7 +64,6 @@ const All = ({ navigation }) => {
 
         }
 
-
     }
     const addTaskLocal = async () => {
 
@@ -72,12 +73,15 @@ const All = ({ navigation }) => {
                 temp = [...generalState.data.GetAllTasks]
             }
             let body = {
+                id: uuidv4(),
                 name: title,
                 description: desc,
                 isDone: false
             }
+            console.log("neew task", body)
             temp.unshift(body)
-            setdata(temp)
+            dispatch(saveResponseGeneral(temp, "GetAllTasks"));
+            dispatch(FilterTasks(temp))
         }
         else {
             dispatch(saveError("AddNewTask", "please fill all required fields"))
